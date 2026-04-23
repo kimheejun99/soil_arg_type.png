@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Arctic VFDB Sample Map (Final Version)</title>
+  <meta charset="utf-8">
+  <style>
+    #map { height: 100vh; width: 100%; }
+    .modal {
+      display: none; position: fixed; z-index: 9999; padding-top: 60px;
+      left: 0; top: 0; width: 100%; height: 100%; overflow: auto;
+      background-color: rgba(0,0,0,0.8);
+    }
+    .modal-content { margin: auto; display: block; max-width: 90%; max-height: 90%; }
+    .close {
+      position: absolute; top: 30px; right: 40px; color: #fff;
+      font-size: 40px; font-weight: bold; cursor: pointer;
+    }
+  </style>
+  <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier/1.0.3/oms.min.js"></script>
+</head>
+<body>
+  <div id="map"></div>
+
+  <div id="imageModal" class="modal">
+    <span class="close" onclick="document.getElementById('imageModal').style.display='none'">&times;</span>
+    <img class="modal-content" id="modalImage">
+  </div>
+
+  <script>
+    const data = [
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR3985382"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR3985385"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR3985388"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR3985383"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR3985384"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR3985389"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR394961"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3985186"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3985188"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3984962"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3984960"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3984963"},
+      {"name": "PRJNA_Arctic", "lat": 71.1, "lng": -156.4, "id": "SRR3985369"},
+      {"name": "PRJNA_Arctic", "lat": 71.1, "lng": -156.4, "id": "SRR3985368"},
+      {"name": "PRJNA_Arctic", "lat": 71.1, "lng": -156.4, "id": "SRR3985376"},
+      {"name": "PRJNA_Arctic", "lat": 71.1, "lng": -156.4, "id": "SRR3985190"},
+      {"name": "PRJNA_Arctic", "lat": 71.1, "lng": -156.4, "id": "SRR8090375"},
+      {"name": "PRJNA_Arctic", "lat": 71.1, "lng": -156.4, "id": "SRR3985370"},
+      {"name": "PRJNA_Arctic", "lat": 71.1, "lng": -156.4, "id": "SRR3985525"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR3985526"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR3985625"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR3985523"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR3985524"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR3985624"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3985391"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3985397"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3985394"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3985390"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3985396"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3985395"},
+      {"name": "PRJNA_Arctic", "lat": 71.1, "lng": -156.4, "id": "SRR3985418"},
+      {"name": "PRJNA_Arctic", "lat": 71.1, "lng": -156.4, "id": "SRR3985421"},
+      {"name": "PRJNA_Arctic", "lat": 71.1, "lng": -156.4, "id": "SRR3985527"},
+      {"name": "PRJNA_Arctic", "lat": 71.1, "lng": -156.4, "id": "SRR3985420"},
+      {"name": "PRJNA_Arctic", "lat": 71.1, "lng": -156.4, "id": "SRR3985419"},
+      {"name": "PRJNA_Arctic", "lat": 71.1, "lng": -156.4, "id": "SRR3985424"},
+      {"name": "PRJNA_Arctic", "lat": 71.3, "lng": -156.6, "id": "SRR5665647"},
+      {"name": "PRJNA_Arctic", "lat": 71.3, "lng": -156.6, "id": "SRR5665648"},
+      {"name": "PRJNA_Arctic", "lat": 71.3, "lng": -156.6, "id": "SRR5665809"},
+      {"name": "PRJNA_Arctic", "lat": 71.1, "lng": -156.3, "id": "SRR5674536"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR5665811"},
+      {"name": "PRJNA_Arctic", "lat": 71.1, "lng": -156.3, "id": "SRR5674476"},
+      {"name": "PRJNA_Arctic", "lat": 71.1, "lng": -156.6, "id": "SRR5665213"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR5664280"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.3, "id": "SRR5659263"},
+      {"name": "PRJNA_Arctic", "lat": 71.1, "lng": -156.6, "id": "SRR5665254"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR5664279"},
+      {"name": "PRJNA_Arctic", "lat": 71.1, "lng": -156.4, "id": "SRR5680860"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.3, "id": "SRR5660397"}
+    ];
+
+    function initMap() {
+      const center = { lat: 71.2, lng: -156.4 };
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 12, // 데이터가 밀집되어 있으므로 초기 줌을 높였습니다.
+        center: center,
+      });
+
+      const oms = new OverlappingMarkerSpiderfier(map, {
+        markersWontMove: true,
+        markersWontHide: true,
+        basicFormatEvents: true,
+        keepSpiderfied: true
+      });
+
+      const infoWindow = new google.maps.InfoWindow();
+
+      const markers = data.map(loc => {
+        const marker = new google.maps.Marker({
+          position: { lat: loc.lat, lng: loc.lng },
+          title: loc.id,
+        });
+
+        // 상대 경로 설정 (폴더명/파일명_접미사.png)
+        const argsImg = `ARG_barplot/${loc.id}_tpm.png`;
+        const vfImg = `VF_barplot/${loc.id}_vf_category.png`;
+
+        marker.desc = `
+          <div style="text-align:center; min-width: 250px;">
+            <strong style="font-size:14px;">Sample ID: ${loc.id}</strong><hr>
+            <div style="margin-bottom:10px;">
+              <p style="margin:5px 0; font-weight:bold;">ARG TPM Barplot</p>
+              <img src="${argsImg}" width="300" style="cursor:zoom-in; border:1px solid #ddd;" 
+                   onclick="showModal('${argsImg}')" 
+                   onerror="this.onerror=null;this.src='https://via.placeholder.com/300x150?text=ARG+Image+Not+Found';">
+            </div>
+            <div>
+              <p style="margin:5px 0; font-weight:bold;">VF Category Barplot</p>
+              <img src="${vfImg}" width="300" style="cursor:zoom-in; border:1px solid #ddd;" 
+                   onclick="showModal('${vfImg}')" 
+                   onerror="this.onerror=null;this.src='https://via.placeholder.com/300x150?text=VF+Image+Not+Found';">
+            </div>
+          </div>
+        `;
+
+        oms.addMarker(marker);
+        return marker;
+      });
+
+      oms.addListener('click', function(marker) {
+        infoWindow.setContent(marker.desc);
+        infoWindow.open(map, marker);
+      });
+
+      new markerClusterer.MarkerClusterer({ map, markers });
+    }
+
+    function showModal(src) {
+      const modal = document.getElementById("imageModal");
+      const modalImg = document.getElementById("modalImage");
+      modalImg.src = src;
+      modal.style.display = "block";
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById("imageModal");
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    }
+  </script>
+
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBwxR1hcuCpu2y1vXmQN0AXUnefNnRY604&callback=initMap">
+  </script>
+</body>
+</html>
