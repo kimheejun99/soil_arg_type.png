@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Arctic VFDB Sample Map (Final Version)</title>
+  <title>Arctic VFDB Sample Map (Final Fixed)</title>
   <meta charset="utf-8">
   <style>
     #map { height: 100vh; width: 100%; }
@@ -35,7 +35,7 @@
       {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR3985383"},
       {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR3985384"},
       {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR3985389"},
-      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR394961"},
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3984961"}, // ID 오타 수정
       {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3985186"},
       {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3985188"},
       {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3984962"},
@@ -83,7 +83,7 @@
     function initMap() {
       const center = { lat: 71.2, lng: -156.4 };
       const map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 12, // 데이터가 밀집되어 있으므로 초기 줌을 높였습니다.
+        zoom: 12,
         center: center,
       });
 
@@ -96,15 +96,18 @@
 
       const infoWindow = new google.maps.InfoWindow();
 
+      // GitHub Raw 이미지 주소를 고정으로 사용합니다 (가장 확실한 방법)
+      const rawBase = "https://raw.githubusercontent.com/kimheejun99/soil_arg_type.png/main";
+
       const markers = data.map(loc => {
         const marker = new google.maps.Marker({
           position: { lat: loc.lat, lng: loc.lng },
           title: loc.id,
         });
 
-        // 상대 경로 설정 (폴더명/파일명_접미사.png)
-        const argsImg = `ARG_barplot/${loc.id}_tpm.png`;
-        const vfImg = `VF_barplot/${loc.id}_vf_category.png`;
+        // 주소를 조합합니다.
+        const argsImg = `${rawBase}/ARG_barplot/${loc.id}_tpm.png`;
+        const vfImg = `${rawBase}/VF_barplot/${loc.id}_vf_category.png`;
 
         marker.desc = `
           <div style="text-align:center; min-width: 250px;">
