@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Arctic VFDB Sample Map (Final Fixed)</title>
+  <title>Arctic Sample Map - Final Fix</title>
   <meta charset="utf-8">
   <style>
     #map { height: 100vh; width: 100%; }
@@ -11,17 +11,13 @@
       background-color: rgba(0,0,0,0.8);
     }
     .modal-content { margin: auto; display: block; max-width: 90%; max-height: 90%; }
-    .close {
-      position: absolute; top: 30px; right: 40px; color: #fff;
-      font-size: 40px; font-weight: bold; cursor: pointer;
-    }
+    .close { position: absolute; top: 30px; right: 40px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; }
   </style>
   <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier/1.0.3/oms.min.js"></script>
 </head>
 <body>
   <div id="map"></div>
-
   <div id="imageModal" class="modal">
     <span class="close" onclick="document.getElementById('imageModal').style.display='none'">&times;</span>
     <img class="modal-content" id="modalImage">
@@ -35,7 +31,7 @@
       {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR3985383"},
       {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR3985384"},
       {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.4, "id": "SRR3985389"},
-      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3984961"}, // ID 오타 수정
+      {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3984961"}, // ID 오타 수정 완료
       {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3985186"},
       {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3985188"},
       {"name": "PRJNA_Arctic", "lat": 71.2, "lng": -156.6, "id": "SRR3984962"},
@@ -82,51 +78,36 @@
 
     function initMap() {
       const center = { lat: 71.2, lng: -156.4 };
-      const map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 12,
-        center: center,
-      });
-
-      const oms = new OverlappingMarkerSpiderfier(map, {
-        markersWontMove: true,
-        markersWontHide: true,
-        basicFormatEvents: true,
-        keepSpiderfied: true
-      });
-
+      const map = new google.maps.Map(document.getElementById("map"), { zoom: 12, center: center });
+      const oms = new OverlappingMarkerSpiderfier(map, { markersWontMove: true, markersWontHide: true, keepSpiderfied: true });
       const infoWindow = new google.maps.InfoWindow();
 
-      // GitHub Raw 이미지 주소를 고정으로 사용합니다 (가장 확실한 방법)
-      const rawBase = "https://raw.githubusercontent.com/kimheejun99/soil_arg_type.png/main";
+      // GitHub Pages 공식 배포 주소를 사용합니다. (가장 안정적임)
+      const pagesBase = "https://kimheejun99.github.io/soil_arg_type.png";
 
       const markers = data.map(loc => {
-        const marker = new google.maps.Marker({
-          position: { lat: loc.lat, lng: loc.lng },
-          title: loc.id,
-        });
+        const marker = new google.maps.Marker({ position: { lat: loc.lat, lng: loc.lng }, title: loc.id });
 
-        // 주소를 조합합니다.
-        const argsImg = `${rawBase}/ARG_barplot/${loc.id}_tpm.png`;
-        const vfImg = `${rawBase}/VF_barplot/${loc.id}_vf_category.png`;
+        const argsImg = `${pagesBase}/ARG_barplot/${loc.id}_tpm.png`;
+        const vfImg = `${pagesBase}/VF_barplot/${loc.id}_vf_category.png`;
 
         marker.desc = `
           <div style="text-align:center; min-width: 250px;">
             <strong style="font-size:14px;">Sample ID: ${loc.id}</strong><hr>
-            <div style="margin-bottom:10px;">
+            <div>
               <p style="margin:5px 0; font-weight:bold;">ARG TPM Barplot</p>
               <img src="${argsImg}" width="300" style="cursor:zoom-in; border:1px solid #ddd;" 
                    onclick="showModal('${argsImg}')" 
-                   onerror="this.onerror=null;this.src='https://via.placeholder.com/300x150?text=ARG+Image+Not+Found';">
+                   onerror="console.log('Failed to load ARG image: ${argsImg}'); this.src='https://via.placeholder.com/300x150?text=ARG+Not+Found';">
             </div>
-            <div>
+            <div style="margin-top:10px;">
               <p style="margin:5px 0; font-weight:bold;">VF Category Barplot</p>
               <img src="${vfImg}" width="300" style="cursor:zoom-in; border:1px solid #ddd;" 
                    onclick="showModal('${vfImg}')" 
-                   onerror="this.onerror=null;this.src='https://via.placeholder.com/300x150?text=VF+Image+Not+Found';">
+                   onerror="console.log('Failed to load VF image: ${vfImg}'); this.src='https://via.placeholder.com/300x150?text=VF+Not+Found';">
             </div>
           </div>
         `;
-
         oms.addMarker(marker);
         return marker;
       });
@@ -135,27 +116,20 @@
         infoWindow.setContent(marker.desc);
         infoWindow.open(map, marker);
       });
-
       new markerClusterer.MarkerClusterer({ map, markers });
     }
 
     function showModal(src) {
-      const modal = document.getElementById("imageModal");
-      const modalImg = document.getElementById("modalImage");
-      modalImg.src = src;
-      modal.style.display = "block";
+      document.getElementById("modalImage").src = src;
+      document.getElementById("imageModal").style.display = "block";
     }
 
     window.onclick = function(event) {
-      const modal = document.getElementById("imageModal");
-      if (event.target === modal) {
-        modal.style.display = "none";
+      if (event.target === document.getElementById("imageModal")) {
+        document.getElementById("imageModal").style.display = "none";
       }
     }
   </script>
-
-  <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBwxR1hcuCpu2y1vXmQN0AXUnefNnRY604&callback=initMap">
-  </script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBwxR1hcuCpu2y1vXmQN0AXUnefNnRY604&callback=initMap"></script>
 </body>
 </html>
